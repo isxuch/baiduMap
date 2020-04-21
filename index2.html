@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	<title>地图展示</title>
+	<!--引用百度地图API-->
+	<style type="text/css">
+		html,body{margin:0;padding:0;}
+		/*地图标题*/
+		.BMap_bubble_title {
+			color:white;
+			font-size:13px;
+			font-weight:bold;
+			text-align:left;
+			padding-left:5px;
+			padding-top:5px;
+			border-bottom:1px solid gray;
+			background-color:#605ca8;
+			line-height:10px !important;
+		}
+		/* 消息内容 */
+		.BMap_bubble_content {
+			background-color:white;
+			/*padding-left:0px;*/
+			padding-right: 10px;
+			padding-top:5px;
+			padding-bottom:10px;
+		}
+		/* 内容 */
+		.BMap_pop div:nth-child(9) {
+			top:35px !important;
+			border-radius:7px;
+		}
+		/* 左上角删除按键 */
+		.BMap_pop img {
+			top:43px !important;
+			/*left:215px !important;*/
+			margin-left:-10px;
+		}
+		.BMap_top {
+			display:none;
+		}
+		.BMap_bottom {
+			display:none;
+		}
+		.BMap_center {
+			display:none;
+		}
+		/* 隐藏边角 */
+		.BMap_pop div:nth-child(1) div {
+			display:none;
+		}
+		.BMap_pop div:nth-child(3) {
+			display:none;
+		}
+		.BMap_pop div:nth-child(7) {
+			display:none;
+		}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=8v9nzQK1CI7fD2IuEHIqPnzdnD3EHpVI"></script>
+</head>
+ 
+<body>
+<!--百度地图容器-->
+<div style="width:100%;height:100%;border:#ccc solid 1px;" id="dituContent"></div>
+</body>
+<script type="text/javascript">
+	var markerArr=[];
+	//创建和初始化地图函数：
+	function initMap(){
+		createMap();//创建地图
+		setMapEvent();//设置地图事件
+		addMapControl();//向地图添加控件
+		// 随机向地图添加25个标注
+		var bounds = map.getBounds();
+		var sw = bounds.getSouthWest();
+		var ne = bounds.getNorthEast();
+		var lngSpan = Math.abs(sw.lng - ne.lng);
+		var latSpan = Math.abs(ne.lat - sw.lat);
+		for (var i = 0; i < 100; i ++) {
+			var lng = sw.lng + lngSpan * (Math.random() * 0.7);
+			var lat = ne.lat - latSpan * (Math.random() * 0.7);
+			// var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
+			// markerArr = [{title:"设备"+i+"",content:"2020.01.12",point:""+lng+"|"+lat+"",isOpen:0,icon:{w:23,h:25,l:23,t:21,x:9,lb:12}}];
+			markerArr.push({title:"设备"+i+"",content:"2020.01.12",point:""+lng+"|"+lat+"",isOpen:0,icon:{w:23,h:25,l:23,t:21,x:9,lb:12}});
+		}
+		addMarker();
+	}
+ 
+	//创建地图函数：
+	function createMap(){
+		var map = new BMap.Map("dituContent");//在百度地图容器中创建一个地图
+		var point = new BMap.Point(120.21551,30.253082);//定义一个中心点坐标
+		map.centerAndZoom(point,12);//设定地图的中心点和坐标并将地图显示在地图容器中
+		map.setMapStyleV2({
+			styleId: 'ed759f8c12d2b99577dc7f9908b0048f'
+		});
+		window.map = map;//将map变量存储在全局
+	}
+ 
+	//地图事件设置函数：
+	function setMapEvent(){
+		map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+		map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+		map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+		map.enableKeyboard();//启用键盘上下左右键移动地图
+	}
+ 
+	//地图控件添加函数：
+	function addMapControl(){
+		//向地图中添加缩放控件
+		var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+		map.addControl(ctrl_nav);
+		//向地图中添加缩略图控件
+		var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
+		map.addControl(ctrl_ove);
+		//向地图中添加比例尺控件
+		var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+		map.addControl(ctrl_sca);
+	}
+ 
+	//标注点数组
+	// var markerArr = [{title:"设备1",content:"2020.01.12",point:"116.348789|39.918034",isOpen:0,icon:{w:23,h:25,l:23,t:21,x:9,lb:12}}
+	// 	,{title:"设备2",content:"2020.01.12",point:"120.225571|30.272547",isOpen:0,icon:{w:23,h:25,l:23,t:21,x:9,lb:12}}
+	// 	,{title:"设备3",content:"2020.01.12",point:"120.175553|30.24859",isOpen:0,icon:{w:23,h:25,l:23,t:21,x:9,lb:12}}
+	// ];
+	//创建marker
+	function addMarker(){
+		for(var i=0;i<markerArr.length;i++){
+			var json = markerArr[i];
+			var p0 = json.point.split("|")[0];
+			var p1 = json.point.split("|")[1];
+			var point = new BMap.Point(p0,p1);
+			var iconImg = createIcon(json.icon);
+			var marker = new BMap.Marker(point,{icon:iconImg});
+			var iw = createInfoWindow(i);
+			var label = new BMap.Label(json.title,{"offset":new BMap.Size(json.icon.lb-json.icon.x+10,-20)});
+			marker.setLabel(label);
+			map.addOverlay(marker);
+			label.setStyle({
+				borderColor:"#808080",
+				color:"#333",
+				cursor:"pointer"
+			});
+ 
+			(function(){
+				var index = i;
+				var _iw = createInfoWindow(i);
+				var _marker = marker;
+				_marker.addEventListener("click",function(){
+					this.openInfoWindow(_iw);
+				});
+				_iw.addEventListener("open",function(){
+					_marker.getLabel().hide();
+				})
+				_iw.addEventListener("close",function(){
+					_marker.getLabel().show();
+				})
+				label.addEventListener("click",function(){
+					_marker.openInfoWindow(_iw);
+				})
+				if(!!json.isOpen){
+					label.hide();
+					_marker.openInfoWindow(_iw);
+				}
+			})()
+		}
+	}
+	//创建InfoWindow
+	function createInfoWindow(i){
+		var json = markerArr[i];
+		var opts = {
+			width: 0, // 信息窗口宽度
+			height: 0, // 信息窗口高度
+			title: '<h3 style="float: left">'+json.title+'</h3>', // 信息窗口标题
+			enableMessage: true, //设置允许信息窗发送短息
+			message: ""
+		}
+		var html = '<div class="col-xs-12" style="margin-left: -20px">\n' +
+				'                    <ul class="list-unstyled">\n' +
+				'                      <li style="list-style-type:none;">设备名称：设备1</li>\n' +
+				'                      <li style="list-style-type:none;">出发地：浙江省杭州市西湖区西湖文化广场</li>\n' +
+				'                      <li style="list-style-type:none;">目的地：浙江省杭州市滨江区滨江区政府对面</li>\n' +
+				'                      <li style="list-style-type:none;">电池电量：1000毫安</li>\n' +
+				'                      <li style="list-style-type:none;float: right "><a href="">定位轨迹</a></li>\n' +
+				'                    </ul>\n' +
+				'                  </div>';
+		// var iw = new BMap.InfoWindow("<div class='BMap_bubble_content'>"+json.content+"</div>",opts);
+		var iw = new BMap.InfoWindow(html,opts);
+		return iw;
+	}
+	//创建一个Icon
+	function createIcon(json){
+		var icon = new BMap.Icon(" http://api.map.baidu.com/lbsapi/creatmap/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
+		return icon;
+	}
+ 
+	initMap();//创建和初始化地图
+</script>
+</html>

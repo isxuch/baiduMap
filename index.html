@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>百度地图-多个坐标点一起显示</title>
+    <style type="text/css">
+        #allmap {
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+</head>
+
+<body>
+    <div id="allmap"></div>
+    <div id="testBox"></div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=8v9nzQK1CI7fD2IuEHIqPnzdnD3EHpVI">
+    </script>
+    <script type="text/javascript">
+        // 百度地图API功能
+        var map = new BMap.Map("allmap");
+        var point = new BMap.Point(116.404, 39.915);
+        map.centerAndZoom(point, 15);
+        // 44.351643,33.348414
+        var jsonData = [{
+                lng: 121.201545,
+                lat: 31.200526,
+                title: '申通快递(总部运营管理部)',
+                tel: '18256963597',
+                address: '北青公路6598号25弄'
+            },
+            {
+                lng: 44.351643,
+                lat: 33.348414,
+                title: '伊拉克',
+                tel: '18256963597',
+                address: '伊拉克--巴格达'
+            },
+            {
+                lng: 19.907974,
+                lat: 50.08816,
+                title: '申通英国3',
+                tel: '18256963597',
+                address: '英国伦敦3'
+            },
+            {
+                lng: 13.597701,
+                lat: 49.492632,
+                title: '申通英国4',
+                tel: '18256963597',
+                address: '英国伦敦4'
+            }
+        ];
+        var pointArray = new Array();
+        // 循环添加marker点
+        for (var i = 0; i < jsonData.length; i++) {
+            var myIcon = new BMap.Icon("./map@icon.png", new BMap.Size(34, 39));
+            var marker = new BMap.Marker(new BMap.Point(jsonData[i].lng, jsonData[i].lat), {
+                icon: myIcon
+            }); // 创建点
+            map.addOverlay(marker); //增加点
+            pointArray[i] = new BMap.Point(jsonData[i].lng, jsonData[i].lat);
+            var content = jsonData[i];
+            addClickHandler(content, marker, i);
+        }
+        //让所有点在视野范围内
+        map.setViewport(pointArray);
+
+        function addClickHandler(content, marker, i) {
+            marker.addEventListener("click", function (e) {
+                openInfo(content, e, i)
+            });
+        }
+        // 点击marker点 展示具体信息
+        function openInfo(content, e, i) {
+            var opts = {
+                width: 0, // 信息窗口宽度
+                height: 0, // 信息窗口高度
+                title: '<h3>' + jsonData[i].title + '</h3>', // 信息窗口标题
+                enableMessage: true, //设置允许信息窗发送短息
+                message: ""
+            }
+            var p = e.target;
+            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            var html = '';
+            html += '<div class="tabPeo">\
+                <div class="text">\
+                <img src="./map@icon2.png">\
+                ' + jsonData[i].address + '\
+                </div>\
+                <div class="text">\
+                <img src="./map@icon3.png">\
+                ' + jsonData[i].tel + '\
+                </div>\
+                </div>';
+            var infoWindow = new BMap.InfoWindow(html, opts); // 创建信息窗口对象
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+            document.getElementById('testBox').innerHTML = 'hhhhhh';
+        }
+        map.enableScrollWheelZoom(); //启用滚轮放大缩小，默认禁用
+        map.enableContinuousZoom(); //启用地图惯性拖拽，默认禁用
+        // 添加控件
+        var top_left_control = new BMap.ScaleControl({
+            anchor: BMAP_ANCHOR_TOP_LEFT
+        }); // 左上角，添加比例尺
+        var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
+        var top_right_navigation = new BMap.NavigationControl({
+            anchor: BMAP_ANCHOR_TOP_RIGHT,
+            type: BMAP_NAVIGATION_CONTROL_SMALL
+        }); //右上角，仅包含平移和缩放按钮
+
+        function add_control() {
+            map.addControl(top_left_control);
+            map.addControl(top_left_navigation);
+            map.addControl(top_right_navigation);
+        }
+
+        add_control();
+
+        //移动到某一坐标点
+        function to(x, y) {
+            map.panTo(new BMap.Point(x, y));
+
+        }
+    </script>
+    <style>
+        .BMap_pop .BMap_top {
+            border-top: none;
+        }
+
+        .BMap_pop .BMap_bottom {
+            border-bottom: none;
+        }
+
+        .BMap_pop .BMap_center {
+            border: none;
+        }
+
+        .BMap_pop>div>div {
+            border: none !important;
+        }
+
+        .BMap_bottom div {
+            border: none !important;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /*地图标题*/
+        .BMap_pop .BMap_bubble_title {
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 10px;
+            padding-top: 2px;
+            border-bottom: 1px solid gray;
+            background-color: #fff;
+            color: #000;
+            line-height: 10px !important;
+            border-bottom: 1px solid rgba(183, 183, 183, 1) !important;
+        }
+
+        /* 消息内容 */
+        .BMap_bubble_content {
+            background-color: white;
+            /*padding-left:0px;*/
+            padding-right: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        /* 内容 */
+        .BMap_pop div:nth-child(9) {
+            top: 35px !important;
+            border-radius: 7px;
+        }
+
+        /* 左上角删除按键 */
+        .BMap_pop img {
+            top: 43px !important;
+            margin-left: -10px;
+        }
+
+        .BMap_top {
+            display: none;
+        }
+
+        .BMap_bottom {
+            display: none;
+        }
+
+        .BMap_center {
+            display: none;
+        }
+
+        /* 隐藏边角 */
+        .BMap_pop div:nth-child(1) div {
+            display: none;
+        }
+
+        .BMap_pop div:nth-child(3) {
+            display: none;
+        }
+
+        .BMap_pop div:nth-child(5) {
+            display: none;
+        }
+
+        .BMap_pop div:nth-child(7) {
+            display: none;
+        }
+
+        .BMap_pop .tabPeo div {
+            display: block !important;
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 1);
+            margin-top: 10px;
+        }
+
+        .BMap_pop .tabPeo .text img {
+            margin-left: 10px;
+            margin-right: 5px;
+        }
+
+        .BMap_pop .tabPeo .text {
+            padding: 5px 0;
+        }
+
+        .BMap_pop .tabPeo .text:last-child {
+            padding-bottom: 10px;
+        }
+    </style>
+</body>
+
+</html>
