@@ -6,12 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>百度地图-多个坐标点一起显示</title>
+    <style type="text/css">
+        #allmap {
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
 </head>
 
 <body>
     <div id="allmap"></div>
     <div id="testBox"></div>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=8v9nzQK1CI7fD2IuEHIqPnzdnD3EHpVI">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=OU1qZk4U3NqQZGL5eTGxagZ8SFV3hiU0">
     </script>
     <script type="text/javascript">
         // 百度地图API功能
@@ -104,7 +113,6 @@
             anchor: BMAP_ANCHOR_TOP_RIGHT,
             type: BMAP_NAVIGATION_CONTROL_SMALL
         }); //右上角，仅包含平移和缩放按钮
-
         function add_control() {
             map.addControl(top_left_control);
             map.addControl(top_left_navigation);
@@ -116,8 +124,11 @@
         //移动到某一坐标点
         function to(x, y) {
             map.panTo(new BMap.Point(x, y));
-
         }
+        // 清除所有marker点
+        // setTimeout(()=>{
+        //     map.clearOverlays();
+        // },5000);
     </script>
     <style>
         .BMap_pop .BMap_top {
@@ -146,13 +157,6 @@
             margin: 0;
             padding: 0;
         }
-         #allmap {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            margin: 0;
-            font-family: "微软雅黑";
-        }
 
         /*地图标题*/
         .BMap_pop .BMap_bubble_title {
@@ -161,12 +165,20 @@
             font-weight: bold;
             text-align: left;
             padding-left: 10px;
+            padding-right: 10px;
             padding-top: 2px;
             border-bottom: 1px solid gray;
             background-color: #fff;
             color: #000;
             line-height: 10px !important;
             border-bottom: 1px solid rgba(183, 183, 183, 1) !important;
+        }
+
+        .BMap_pop .BMap_bubble_title h3{
+            text-align: center;
+            font-size:12px;
+            font-weight:600;
+            color:rgba(0,0,0,1);
         }
 
         /* 消息内容 */
@@ -188,6 +200,11 @@
         .BMap_pop img {
             top: 43px !important;
             margin-left: -10px;
+            
+        }
+
+        .BMap_pop :nth-child(10){
+            display: none;
         }
 
         .BMap_top {
@@ -230,6 +247,7 @@
         .BMap_pop .tabPeo .text img {
             margin-left: 10px;
             margin-right: 5px;
+            display: inline-block;
         }
 
         .BMap_pop .tabPeo .text {
