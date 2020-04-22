@@ -6,13 +6,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>百度地图-多个坐标点一起显示</title>
-    <style type="text/css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         #allmap {
             width: 100%;
-            height: 600px;
+            height: 100%;
             overflow: hidden;
             margin: 0;
             font-family: "微软雅黑";
+        }
+
+        .BMap_pop .BMap_top {
+            border-top: none;
+        }
+
+        .BMap_pop .BMap_bottom {
+            border-bottom: none;
+        }
+
+        .BMap_pop .BMap_center {
+            border: none;
+        }
+
+        .BMap_pop>div>div {
+            border: none !important;
+        }
+
+        .BMap_bottom div {
+            border: none !important;
+        }
+
+
+
+        /*地图标题*/
+        .BMap_pop .BMap_bubble_title {
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 2px;
+            border-bottom: 1px solid gray;
+            background-color: #fff;
+            color: #000;
+            line-height: 10px !important;
+            border-bottom: 1px solid rgba(183, 183, 183, 1) !important;
+        }
+
+        .BMap_pop .BMap_bubble_title h3 {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        /* 消息内容 */
+        .BMap_bubble_content {
+            background-color: white;
+            /*padding-left:0px;*/
+            padding-right: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        /* 内容 */
+        .BMap_pop div:nth-child(9) {
+            top: 35px !important;
+            border-radius: 7px;
+        }
+
+        /* 左上角删除按键 */
+        .BMap_pop img {
+            top: 43px !important;
+            margin-left: -10px;
+
+        }
+
+        .BMap_pop :nth-child(10) {
+            display: none;
+        }
+
+        .BMap_top {
+            display: none;
+        }
+
+        .BMap_bottom {
+            display: none;
+        }
+
+        .BMap_center {
+            display: none;
+        }
+
+        /* 隐藏边角 */
+        .BMap_pop div:nth-child(1) div {
+            display: none;
+        }
+
+        .BMap_pop div:nth-child(3) {
+            display: none;
+        }
+
+        .BMap_pop div:nth-child(5) {
+            display: none;
+        }
+
+        .BMap_pop div:nth-child(7) {
+            display: none;
+        }
+
+        .BMap_pop .tabPeo div {
+            display: block !important;
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 1);
+            margin-top: 10px;
+        }
+
+        .BMap_pop .tabPeo .text img {
+            margin-left: 10px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        .BMap_pop .tabPeo .text {
+            padding: 5px 0;
+        }
+
+        .BMap_pop .tabPeo .text:last-child {
+            padding-bottom: 10px;
         }
     </style>
 </head>
@@ -130,134 +260,7 @@
         //     map.clearOverlays();
         // },5000);
     </script>
-    <style>
-        .BMap_pop .BMap_top {
-            border-top: none;
-        }
 
-        .BMap_pop .BMap_bottom {
-            border-bottom: none;
-        }
-
-        .BMap_pop .BMap_center {
-            border: none;
-        }
-
-        .BMap_pop>div>div {
-            border: none !important;
-        }
-
-        .BMap_bottom div {
-            border: none !important;
-        }
-
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        /*地图标题*/
-        .BMap_pop .BMap_bubble_title {
-            color: white;
-            font-size: 13px;
-            font-weight: bold;
-            text-align: left;
-            padding-left: 10px;
-            padding-right: 10px;
-            padding-top: 2px;
-            border-bottom: 1px solid gray;
-            background-color: #fff;
-            color: #000;
-            line-height: 10px !important;
-            border-bottom: 1px solid rgba(183, 183, 183, 1) !important;
-        }
-
-        .BMap_pop .BMap_bubble_title h3{
-            text-align: center;
-            font-size:12px;
-            font-weight:600;
-            color:rgba(0,0,0,1);
-        }
-
-        /* 消息内容 */
-        .BMap_bubble_content {
-            background-color: white;
-            /*padding-left:0px;*/
-            padding-right: 10px;
-            padding-top: 5px;
-            padding-bottom: 10px;
-        }
-
-        /* 内容 */
-        .BMap_pop div:nth-child(9) {
-            top: 35px !important;
-            border-radius: 7px;
-        }
-
-        /* 左上角删除按键 */
-        .BMap_pop img {
-            top: 43px !important;
-            margin-left: -10px;
-            
-        }
-
-        .BMap_pop :nth-child(10){
-            display: none;
-        }
-
-        .BMap_top {
-            display: none;
-        }
-
-        .BMap_bottom {
-            display: none;
-        }
-
-        .BMap_center {
-            display: none;
-        }
-
-        /* 隐藏边角 */
-        .BMap_pop div:nth-child(1) div {
-            display: none;
-        }
-
-        .BMap_pop div:nth-child(3) {
-            display: none;
-        }
-
-        .BMap_pop div:nth-child(5) {
-            display: none;
-        }
-
-        .BMap_pop div:nth-child(7) {
-            display: none;
-        }
-
-        .BMap_pop .tabPeo div {
-            display: block !important;
-            font-size: 12px;
-            font-weight: 400;
-            color: rgba(0, 0, 0, 1);
-            margin-top: 10px;
-        }
-
-        .BMap_pop .tabPeo .text img {
-            margin-left: 10px;
-            margin-right: 5px;
-            display: inline-block;
-        }
-
-        .BMap_pop .tabPeo .text {
-            padding: 5px 0;
-        }
-
-        .BMap_pop .tabPeo .text:last-child {
-            padding-bottom: 10px;
-        }
-    </style>
 </body>
 
 </html>
