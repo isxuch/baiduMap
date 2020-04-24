@@ -153,10 +153,6 @@
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=OU1qZk4U3NqQZGL5eTGxagZ8SFV3hiU0">
     </script>
     <script type="text/javascript">
-        // 百度地图API功能
-        var map = new BMap.Map("allmap");
-        var point = new BMap.Point(116.404, 39.915);
-        map.centerAndZoom(point, 15);
         // 44.351643,33.348414
         var jsonData = [{
                 lng: 121.201545,
@@ -187,78 +183,80 @@
                 address: '英国伦敦4'
             }
         ];
-        var pointArray = new Array();
-        // 循环添加marker点
-        for (var i = 0; i < jsonData.length; i++) {
-            var myIcon = new BMap.Icon("./map@icon.png", new BMap.Size(34, 39));
-            var marker = new BMap.Marker(new BMap.Point(jsonData[i].lng, jsonData[i].lat), {
-                icon: myIcon
-            }); // 创建点
-            map.addOverlay(marker); //增加点
-            pointArray[i] = new BMap.Point(jsonData[i].lng, jsonData[i].lat);
-            var content = jsonData[i];
-            addClickHandler(content, marker, i);
-        }
-        //让所有点在视野范围内
-        map.setViewport(pointArray);
-
-        function addClickHandler(content, marker, i) {
-            marker.addEventListener("click", function (e) {
-                openInfo(content, e, i)
-            });
-        }
-        // 点击marker点 展示具体信息
-        function openInfo(content, e, i) {
-            var opts = {
-                width: 0, // 信息窗口宽度
-                height: 0, // 信息窗口高度
-                title: '<h3>' + jsonData[i].title + '</h3>', // 信息窗口标题
-                enableMessage: true, //设置允许信息窗发送短息
-                message: ""
-            }
-            var p = e.target;
-            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-            var html = '';
-            html += '<div class="tabPeo">\
-                <div class="text">\
-                <img src="./map@icon2.png">\
-                ' + jsonData[i].address + '\
-                </div>\
-                <div class="text">\
-                <img src="./map@icon3.png">\
-                ' + jsonData[i].tel + '\
-                </div>\
+        var map, point, pointArray = [];
+        this.initMap = {
+            init: function () {
+                let _this = this;
+                // 百度地图API功能
+                map = new BMap.Map("allmap");
+                point = new BMap.Point(116.404, 39.915);
+                map.centerAndZoom(point, 15);
+                map.enableScrollWheelZoom(); //启用滚轮放大缩小，默认禁用
+                map.enableContinuousZoom(); //启用地图惯性拖拽，默认禁用
+                // 添加控件
+                var top_left_control = new BMap.ScaleControl({
+                    anchor: BMAP_ANCHOR_TOP_LEFT
+                }); // 左上角，添加比例尺
+                var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
+                var top_right_navigation = new BMap.NavigationControl({
+                    anchor: BMAP_ANCHOR_TOP_RIGHT,
+                    type: BMAP_NAVIGATION_CONTROL_SMALL
+                }); //右上角，仅包含平移和缩放按钮
+                map.addControl(top_left_control);
+                map.addControl(top_left_navigation);
+                map.addControl(top_right_navigation);
+                // 清除所有marker点
+                map.clearOverlays();
+                // 循环添加marker点
+                for (var i = 0; i < jsonData.length; i++) {
+                    var myIcon = new BMap.Icon("./map@icon.png", new BMap.Size(34, 39));
+                    var marker = new BMap.Marker(new BMap.Point(jsonData[i].lng, jsonData[i].lat), {
+                        icon: myIcon
+                    }); // 创建点
+                    map.addOverlay(marker); //增加点
+                    pointArray[i] = new BMap.Point(jsonData[i].lng, jsonData[i].lat);
+                    var content = jsonData[i];
+                    _this.addClickHandler(content, marker, i);
+                }
+                //让所有点在视野范围内
+                map.setViewport(pointArray);
+                // 移动到某一坐标点
+                ap.panTo(new BMap.Point(jsonData[0].lng,jsonData[0].lat));
+            },
+            // 给所有marker点加上点击事件
+            addClickHandler: function (content, marker, i) {
+                let _this = this;
+                marker.addEventListener("click", function (e) {
+                    _this.openInfo(content, e, i)
+                });
+            },
+            // 点击marker点 展示具体信息
+            openInfo: function (content, e, i) {
+                var opts = {
+                    width: 0, // 信息窗口宽度
+                    height: 0, // 信息窗口高度
+                    title: '<h3>' + jsonData[i].title + '</h3>', // 信息窗口标题
+                    enableMessage: true, //设置允许信息窗发送短息
+                    message: ""
+                }
+                var p = e.target;
+                var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                var html = '';
+                html += '<div class="tabPeo">\
+                    <div class="text">\
+                        <img src="./map@icon2.png">\
+                        ' + jsonData[i].address + '\
+                    </div>\
+                    <div class="text">\
+                        <img src="./map@icon3.png">\
+                        ' + jsonData[i].tel + '\
+                    </div>\
                 </div>';
-            var infoWindow = new BMap.InfoWindow(html, opts); // 创建信息窗口对象
-            map.openInfoWindow(infoWindow, point); //开启信息窗口
+                var infoWindow = new BMap.InfoWindow(html, opts); // 创建信息窗口对象
+                map.openInfoWindow(infoWindow, point); //开启信息窗口
+            }
         }
-        map.enableScrollWheelZoom(); //启用滚轮放大缩小，默认禁用
-        map.enableContinuousZoom(); //启用地图惯性拖拽，默认禁用
-        // 添加控件
-        var top_left_control = new BMap.ScaleControl({
-            anchor: BMAP_ANCHOR_TOP_LEFT
-        }); // 左上角，添加比例尺
-        var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
-        var top_right_navigation = new BMap.NavigationControl({
-            anchor: BMAP_ANCHOR_TOP_RIGHT,
-            type: BMAP_NAVIGATION_CONTROL_SMALL
-        }); //右上角，仅包含平移和缩放按钮
-        function add_control() {
-            map.addControl(top_left_control);
-            map.addControl(top_left_navigation);
-            map.addControl(top_right_navigation);
-        }
-
-        add_control();
-
-        //移动到某一坐标点
-        function to(x, y) {
-            map.panTo(new BMap.Point(x, y));
-        }
-        // 清除所有marker点
-        // setTimeout(()=>{
-        //     map.clearOverlays();
-        // },5000);
+        initMap.init();
     </script>
 
 </body>
